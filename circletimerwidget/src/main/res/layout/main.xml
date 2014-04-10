@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:orientation="vertical"
+              android:weightSum="3"
+              android:gravity="center"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent">
+
+    <com.github.lassana.circletimerwidget.widget.CircleTimerWidget
+            android:id="@+id/circle"
+            app:circle_width="@dimen/circle_width"
+            app:separates_count="60"
+            app:separator_length="@dimen/separator_length"
+            app:indicator_drawable="@drawable/circle_grey"
+            android:layout_margin="10dp"
+            android:layout_weight="3"
+            android:layout_width="match_parent"
+            android:layout_height="0dip"/>
+
+</LinearLayout>
+
