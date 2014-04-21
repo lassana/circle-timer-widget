@@ -1,23 +1,24 @@
 package com.github.lassana.circletimerwidget;
 
 import android.app.Activity;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import com.github.lassana.circletimerwidget.widget.CircleTimerWidget;
 
-
 public class MyActivity extends Activity {
 
     private CircleTimerWidget mCircleTimerWidget;
 
-    /**
-     * Called when the activity is first created.
-     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            getActionBar().setDisplayShowHomeEnabled(false);
+        }
+
         mCircleTimerWidget = (CircleTimerWidget) findViewById(R.id.circle);
         mCircleTimerWidget.setCircleWidgetCallback(new CircleTimerWidget.CircleWidgetCallback() {
             @Override
@@ -25,7 +26,18 @@ public class MyActivity extends Activity {
                 setTitle(Integer.toString(mIndicatorZone));
             }
         });
-        setTitle("0");
+        if ( savedInstanceState == null ) {
+            setTitle("0");
+        } else {
+            setTitle(savedInstanceState.getCharSequence("title"));
+        }
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putCharSequence("title", getTitle());
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -38,7 +50,6 @@ public class MyActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.refresh) {
             mCircleTimerWidget.setIndicatorZone(0);
-            mCircleTimerWidget.invalidate();
             setTitle("0");
             return true;
         } else {
