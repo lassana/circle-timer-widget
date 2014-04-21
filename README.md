@@ -36,7 +36,7 @@ code:
 
     circleTimerWidget.setCircleWidgetCallback(new CircleTimerWidget.CircleWidgetCallback() {
         @Override
-        public void onZoneChanged(int mIndicatorZone) {
+        public void onZoneChanged(int indicatorZone) {
             // ...
         }
     });
