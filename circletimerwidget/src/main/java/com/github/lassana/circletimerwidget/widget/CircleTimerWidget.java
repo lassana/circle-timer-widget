@@ -15,7 +15,7 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-import com.github.lassana.circletimerwidget.R;
+import com.github.lassana.circletimerwidget.widget.R;
 
 /**
  * @author Nikolay
