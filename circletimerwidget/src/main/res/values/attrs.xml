@@ -4,6 +4,14 @@
     <declare-styleable name="CircleTimerWidget">
         <!-- Widget color       -->
         <attr name="widget_color" format="color" />
+        <!-- Left-top widget color       -->
+        <attr name="widget_color_start" format="color" />
+        <!-- Right-bottom widget color       -->
+        <attr name="widget_color_end" format="color" />
+        <!-- Inner start color       -->
+        <attr name="widget_color_center" format="color" />
+        <!-- Inner end color       -->
+        <attr name="widget_color_edge" format="color" />
         <!-- Circle width       -->
         <attr name="circle_width" format="dimension" />
         <!-- Misfires count     -->

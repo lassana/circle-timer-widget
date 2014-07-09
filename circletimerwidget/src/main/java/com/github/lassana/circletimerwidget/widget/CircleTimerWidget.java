@@ -3,10 +3,7 @@ package com.github.lassana.circletimerwidget.widget;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Paint;
+import android.graphics.*;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.preference.Preference;
@@ -28,6 +25,10 @@ public class CircleTimerWidget extends View {
     private int mSeparatesCount;
     private int mIndicatorResourceId;
     private int mWidgetColor;
+    private int mWidgetColorStart;
+    private int mWidgetColorEnd;
+    private int mWidgetColorCenter;
+    private int mWidgetColorEdge;
 
     private Bitmap mIndicatorBitmap;
     private Paint mExtCirclePaint;
@@ -115,7 +116,16 @@ public class CircleTimerWidget extends View {
             mSeparatesCount = array.getInt(R.styleable.CircleTimerWidget_separates_count, 12);
             mSeparatorLength = array.getDimensionPixelSize(R.styleable.CircleTimerWidget_separator_length, 0);
             mIndicatorResourceId = array.getResourceId(R.styleable.CircleTimerWidget_indicator_drawable, 0);
-            mWidgetColor = array.getColor(R.styleable.CircleTimerWidget_widget_color, Resources.getSystem().getColor(android.R.color.background_light));
+            mWidgetColor = array.getColor(R.styleable.CircleTimerWidget_widget_color,
+                    Resources.getSystem().getColor(android.R.color.background_light));
+            mWidgetColorStart = array.getColor(R.styleable.CircleTimerWidget_widget_color_start,
+                    Color.parseColor("#33CCCCCC"));
+            mWidgetColorEnd = array.getColor(R.styleable.CircleTimerWidget_widget_color_end,
+                    Color.parseColor("#CCCCCC"));
+            mWidgetColorCenter = array.getColor(R.styleable.CircleTimerWidget_widget_color_center,
+                    Color.parseColor("#fffbfbfb"));
+            mWidgetColorEdge = array.getColor(R.styleable.CircleTimerWidget_widget_color_edge,
+                    Color.parseColor("#e8e8e8"));
         } finally {
             array.recycle();
         }
@@ -135,22 +145,20 @@ public class CircleTimerWidget extends View {
 
         setWillNotDraw(false);
 
-        if (mIndicatorResourceId != 0) {
+        if (mIndicatorResourceId != 0 && !isInEditMode()) {
             mIndicatorBitmap = BitmapFactory.decodeResource(getResources(), mIndicatorResourceId);
-            mIndicatorBitmap = Bitmap.createScaledBitmap(mIndicatorBitmap, (int) mSeparatorLength * 2, (int) mSeparatorLength * 2, true);
+            mIndicatorBitmap = Bitmap.createScaledBitmap(mIndicatorBitmap,
+                    (int) mSeparatorLength * 2, (int) mSeparatorLength * 2, true);
         }
-
-        mExtCirclePaint = new Paint();
-        mExtCirclePaint.setColor(mWidgetColor);
-        mIntCirclePaint = new Paint();
-        mIntCirclePaint.setColor(getResources().getColor(android.R.color.white));
 
         mSeparatorPaint = new Paint();
         mSeparatorPaint.setColor(mWidgetColor);
-        mSeparatorPaint.setStrokeWidth(1);
+        mSeparatorPaint.setStrokeWidth(2);
 
         mIndicatorPaint = new Paint();
-        mIndicatorPaint.setColor(mWidgetColor);
+        if ( mIndicatorBitmap == null ) {
+            mIndicatorPaint.setColor(mWidgetColor);
+        }
         mIndicatorPaint.setStrokeWidth(3);
     }
 
@@ -181,6 +189,36 @@ public class CircleTimerWidget extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
+        if ( !isInEditMode() ) {
+            final int measuredWidth = getMeasuredWidth();
+            final int measuredHeight = getMeasuredHeight();
+            if ( mExtCirclePaint == null ) {
+                mExtCirclePaint = new Paint();
+                mExtCirclePaint.setShader(new LinearGradient(
+                        0,
+                        0,
+                        measuredWidth / 2,
+                        measuredHeight / 2,
+                        mWidgetColorStart,
+                        mWidgetColorEnd,
+                        Shader.TileMode.CLAMP));
+            }
+
+            if ( mIntCirclePaint == null  ) {
+                mIntCirclePaint = new Paint();
+                //mIntCirclePaint.setColor(getResources().getColor(android.R.color.white));
+                //SweepGradient gradient = new SweepGradient(100, 100, colors , positions);
+                Shader gradient = new RadialGradient(
+                        measuredWidth/2,
+                        measuredHeight/2,
+                        Math.min(measuredHeight, measuredWidth) / 2,
+                        mWidgetColorCenter,
+                        mWidgetColorEdge,
+                        Shader.TileMode.CLAMP);
+                mIntCirclePaint.setShader(gradient);
+            }
+        }
+
         mCanvasWidth = canvas.getWidth();
         mCanvasHeight = canvas.getHeight();
 
@@ -189,8 +227,10 @@ public class CircleTimerWidget extends View {
         float x = mCanvasWidth / 2;
         float y = mCanvasHeight / 2;
 
-        canvas.drawCircle(x, y, radius, mExtCirclePaint);
-        canvas.drawCircle(x, y, radius - mCircleWidth, mIntCirclePaint);
+        if ( !isInEditMode() ) {
+            canvas.drawCircle(x, y, radius, mExtCirclePaint);
+            canvas.drawCircle(x, y, radius - mCircleWidth, mIntCirclePaint);
+        }
 
         // TODO calculate in #initView
         for (int i = 0; i < mSeparatesCount; ++i) {
