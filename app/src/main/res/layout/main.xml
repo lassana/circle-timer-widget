@@ -9,7 +9,7 @@
         app:widget_color_center="#fffbfbfb"
         app:widget_color_edge="#e8e8e8"
         app:circle_width="2dp"
-        app:separates_count="60"
+        app:separators_count="60"
         app:separator_length="12dp"
         app:indicator_drawable="@drawable/circle_grey"
         android:layout_gravity="center"

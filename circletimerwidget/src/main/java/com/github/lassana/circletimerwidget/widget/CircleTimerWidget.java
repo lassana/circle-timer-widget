@@ -113,7 +113,7 @@ public class CircleTimerWidget extends View {
         TypedArray array = getContext().getTheme().obtainStyledAttributes(attrs, R.styleable.CircleTimerWidget, 0, 0);
         try {
             mCircleWidth = array.getDimensionPixelSize(R.styleable.CircleTimerWidget_circle_width, 0);
-            mSeparatesCount = array.getInt(R.styleable.CircleTimerWidget_separates_count, 12);
+            mSeparatesCount = array.getInt(R.styleable.CircleTimerWidget_separators_count, 12);
             mSeparatorLength = array.getDimensionPixelSize(R.styleable.CircleTimerWidget_separator_length, 0);
             mIndicatorResourceId = array.getResourceId(R.styleable.CircleTimerWidget_indicator_drawable, 0);
             mWidgetColor = array.getColor(R.styleable.CircleTimerWidget_widget_color,

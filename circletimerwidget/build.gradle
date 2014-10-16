@@ -7,7 +7,7 @@ buildscript {
     }
 }
 
-apply plugin: 'android-library'
+apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion Integer.parseInt(ANDROID_BUILD_SDK_VERSION)

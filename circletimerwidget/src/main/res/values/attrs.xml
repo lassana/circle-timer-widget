@@ -15,7 +15,7 @@
         <!-- Circle width       -->
         <attr name="circle_width" format="dimension" />
         <!-- Misfires count     -->
-        <attr name="separates_count" format="integer" />
+        <attr name="separators_count" format="integer" />
         <!-- Length of misfire  -->
         <attr name="separator_length" format="dimension" />
         <!-- Indicator drawable -->
