@@ -16,3 +16,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_7
     }
 }
+
+dependencies {
+    compile 'com.android.support:support-v4:21.0.3'
+}

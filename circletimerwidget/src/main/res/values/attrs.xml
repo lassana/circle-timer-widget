@@ -2,24 +2,16 @@
 <resources>
 
     <declare-styleable name="CircleTimerWidget">
-        <!-- Widget color       -->
-        <attr name="widget_color" format="color" />
-        <!-- Left-top widget color       -->
-        <attr name="widget_color_start" format="color" />
-        <!-- Right-bottom widget color       -->
-        <attr name="widget_color_end" format="color" />
-        <!-- Inner start color       -->
-        <attr name="widget_color_center" format="color" />
-        <!-- Inner end color       -->
-        <attr name="widget_color_edge" format="color" />
-        <!-- Circle width       -->
-        <attr name="circle_width" format="dimension" />
-        <!-- Misfires count     -->
-        <attr name="separators_count" format="integer" />
-        <!-- Length of misfire  -->
-        <attr name="separator_length" format="dimension" />
-        <!-- Indicator drawable -->
-        <attr name="indicator_drawable" format="reference" />
+        <attr name="top_color" format="color"/>
+        <attr name="bottom_color" format="color"/>
+        <attr name="center_color" format="color"/>
+        <attr name="edge_color" format="color"/>
+        <attr name="circle_line_width" format="dimension"/>
+        <attr name="hitch_size" format="dimension"/>
+        <attr name="hitch_padding" format="dimension"/>
+        <attr name="hitch_count" format="integer"/>
+        <attr name="indicator_size" format="dimension"/>
+        <attr name="indicator_padding" format="dimension"/>
     </declare-styleable>
 
 </resources>
