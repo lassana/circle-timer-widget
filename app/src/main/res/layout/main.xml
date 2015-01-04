@@ -12,7 +12,17 @@
             android:id="@+id/circle"
             android:layout_weight="0.75"
             android:layout_width="0dp"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            app:start_color="#FFDEBC"
+            app:end_color="#ff8800"
+            app:inner_color="#33b5e5"
+            app:outer_color="#0099cc"
+            app:circle_line_width="3dp"
+            app:hitch_size="30dp"
+            app:hitch_padding="20dp"
+            app:hitch_count="12"
+            app:indicator_size="33dp"
+            app:indicator_padding="10dp"/>
 
 </LinearLayout>
 

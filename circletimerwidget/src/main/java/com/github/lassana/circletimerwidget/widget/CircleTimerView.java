@@ -111,9 +111,7 @@ public class CircleTimerView extends View {
             });
         }
 
-        if (!isInEditMode()) {
-            if (IS_LAYER_TYPES_AVAILABLE) setLayerType(View.LAYER_TYPE_HARDWARE, null);
-        }
+        if (IS_LAYER_TYPES_AVAILABLE && !isInEditMode()) setLayerType(View.LAYER_TYPE_HARDWARE, null);
 
         setWillNotDraw(false);
     }
@@ -141,8 +139,6 @@ public class CircleTimerView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        if (isInEditMode()) return; // TODO do something special in 'edit mode'
-
         final int measuredWidth = getMeasuredWidth();
         final int measuredHeight = getMeasuredHeight();
 
@@ -165,8 +161,10 @@ public class CircleTimerView extends View {
             mExternalCirclePaint.setAntiAlias(true);
 
             mExternalCircleWithShadowPaint = new Paint(mExternalCirclePaint);
-            mExternalCircleWithShadowPaint.setShadowLayer(4.0f, 0.0f, 2.0f, Color.BLACK);
-            if (IS_LAYER_TYPES_AVAILABLE) setLayerType(LAYER_TYPE_SOFTWARE, mExternalCircleWithShadowPaint);
+            if ( !isInEditMode() ) {
+                mExternalCircleWithShadowPaint.setShadowLayer(4.0f, 0.0f, 2.0f, Color.BLACK);
+                if (IS_LAYER_TYPES_AVAILABLE ) setLayerType(LAYER_TYPE_SOFTWARE, mExternalCircleWithShadowPaint);
+            }
         }
 
         if (mInternalCirclePaint == null) {
@@ -191,7 +189,7 @@ public class CircleTimerView extends View {
         final float circleCenterY = mCanvasHeight / 2;
 
         canvas.drawCircle(circleCenterX, circleCenterY, radius - mHitchSize, mExternalCircleWithShadowPaint);
-        canvas.drawCircle(circleCenterX, circleCenterY, radius - mHitchSize - mCircleLineWidth/2, mInternalCirclePaint);
+        canvas.drawCircle(circleCenterX, circleCenterY, radius - mHitchSize - mCircleLineWidth / 2, mInternalCirclePaint);
 
         if (mHitchPositionData == null) {
             mHitchPositionData = new PointF[mHitchCount];
@@ -206,7 +204,7 @@ public class CircleTimerView extends View {
 
         for (PointF nextPosition : mHitchPositionData) {
             canvas.drawCircle(nextPosition.x, nextPosition.y, (mHitchSize - mHitchPadding) / 2, mExternalCirclePaint);
-            canvas.drawCircle(nextPosition.x, nextPosition.y, (mHitchSize - mHitchPadding) / 2 - mCircleLineWidth/2, mInternalCirclePaint);
+            canvas.drawCircle(nextPosition.x, nextPosition.y, (mHitchSize - mHitchPadding) / 2 - mCircleLineWidth / 2, mInternalCirclePaint);
         }
 
         final double indicatorAngle = Math.toRadians(((float) mIndicatorPosition / mHitchCount * 360.0f) - 90f);
@@ -221,7 +219,7 @@ public class CircleTimerView extends View {
         if (indicatorPosition != mIndicatorPosition) {
             mIndicatorPosition = indicatorPosition;
             invalidate();
-            if ( mCircleTimerListener != null ) mCircleTimerListener.onPositionChanged(mIndicatorPosition);
+            if (mCircleTimerListener != null) mCircleTimerListener.onPositionChanged(mIndicatorPosition);
         }
     }
 
@@ -253,8 +251,9 @@ public class CircleTimerView extends View {
     }
 
     public void setIndicatorPosition(int newPosition) {
-        if ( newPosition < 0 ) throw new IllegalArgumentException("New position value cannot be smaller than zero!");
-        if ( newPosition >= mHitchCount ) throw new IllegalArgumentException("New position value cannot be larger that count of hitch!");
+        if (newPosition < 0) throw new IllegalArgumentException("New position value cannot be smaller than zero!");
+        if (newPosition >= mHitchCount)
+            throw new IllegalArgumentException("New position value cannot be larger that count of hitch!");
         mIndicatorPosition = newPosition;
         invalidate();
     }
