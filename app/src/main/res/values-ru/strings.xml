@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">circletimerwidget</string>
-    <string name="action_reset">Reset</string>
+    <string name="action_reset">Сброс</string>
     <string-array name="timer_names">
         <item>0 часов</item>
         <item>1 час</item>

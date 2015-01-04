@@ -52,7 +52,11 @@ class CircleTimerTouchHelper extends ExploreByTouchHelper {
         node.setContentDescription(text);
         node.setText(text);
 
-        node.setBoundsInParent(new Rect(0, 0, mInstance.getWidth(), mInstance.getHeight()));
+        node.setBoundsInParent(new Rect(
+                mInstance.getCanvasWidth() / 2 - mInstance.getRadius(),
+                mInstance.getCanvasHeight() / 2 - mInstance.getRadius(),
+                mInstance.getCanvasWidth() / 2 + mInstance.getRadius(),
+                mInstance.getCanvasHeight() / 2 + mInstance.getRadius()));
 
         node.addAction(AccessibilityNodeInfoCompat.ACTION_CLICK);
     }

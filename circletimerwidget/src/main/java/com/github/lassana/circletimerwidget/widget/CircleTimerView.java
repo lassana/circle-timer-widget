@@ -58,6 +58,7 @@ public class CircleTimerView extends View {
     private int mIndicatorPosition = 0;
     private int mCanvasWidth;
     private int mCanvasHeight;
+    private int mRadius;
 
     /* Callback */
     private CircleTimerListener mCircleTimerListener;
@@ -197,12 +198,12 @@ public class CircleTimerView extends View {
 
         mCanvasWidth = canvas.getWidth();
         mCanvasHeight = canvas.getHeight();
-        final float radius = Math.min(mCanvasWidth, mCanvasHeight) / 2;
+        mRadius = Math.min(mCanvasWidth, mCanvasHeight) / 2;
         final float circleCenterX = mCanvasWidth / 2;
         final float circleCenterY = mCanvasHeight / 2;
 
-        canvas.drawCircle(circleCenterX, circleCenterY, radius - mHitchSize, mExternalCircleWithShadowPaint);
-        canvas.drawCircle(circleCenterX, circleCenterY, radius - mHitchSize - mCircleLineWidth / 2, mInternalCirclePaint);
+        canvas.drawCircle(circleCenterX, circleCenterY, mRadius - mHitchSize, mExternalCircleWithShadowPaint);
+        canvas.drawCircle(circleCenterX, circleCenterY, mRadius - mHitchSize - mCircleLineWidth / 2, mInternalCirclePaint);
 
         if (mHitchPositionData == null) {
             mHitchPositionData = new PointF[mHitchCount];
@@ -210,8 +211,8 @@ public class CircleTimerView extends View {
             for (int i = 0; i < mHitchCount; ++i) {
                 angle = Math.toRadians(((float) i / mHitchCount * 360.0f) - 90f);
                 mHitchPositionData[i] = new PointF(
-                        (float) (circleCenterX + (radius - (mHitchSize / 2)) * Math.cos(angle)),
-                        (float) (circleCenterY + (radius - (mHitchSize / 2)) * Math.sin(angle)));
+                        (float) (circleCenterX + (mRadius - (mHitchSize / 2)) * Math.cos(angle)),
+                        (float) (circleCenterY + (mRadius - (mHitchSize / 2)) * Math.sin(angle)));
             }
         }
 
@@ -221,8 +222,8 @@ public class CircleTimerView extends View {
         }
 
         final double indicatorAngle = Math.toRadians(((float) mIndicatorPosition / mHitchCount * 360.0f) - 90f);
-        final float indicatorX = (float) (circleCenterX + (radius - mHitchSize - mCircleLineWidth - mIndicatorSize / 2) * Math.cos(indicatorAngle));
-        final float indicatorY = (float) (circleCenterY + (radius - mHitchSize - mCircleLineWidth - mIndicatorSize / 2) * Math.sin(indicatorAngle));
+        final float indicatorX = (float) (circleCenterX + (mRadius - mHitchSize - mCircleLineWidth - mIndicatorSize / 2) * Math.cos(indicatorAngle));
+        final float indicatorY = (float) (circleCenterY + (mRadius - mHitchSize - mCircleLineWidth - mIndicatorSize / 2) * Math.sin(indicatorAngle));
         canvas.drawCircle(indicatorX, indicatorY, (mIndicatorSize - mIndicatorPadding) / 2, mExternalCirclePaint);
         //canvas.drawCircle(indicatorX, indicatorY, (mIndicatorSize - mIndicatorPadding) / 2 - mCircleLineWidth/2, mInternalCirclePaint);
     }
@@ -286,5 +287,17 @@ public class CircleTimerView extends View {
 
     protected CharSequence[] getHitchNames() {
         return mHitchNames;
+    }
+
+    protected int getRadius() {
+        return mRadius;
+    }
+
+    protected int getCanvasWidth() {
+        return mCanvasWidth;
+    }
+
+    protected int getCanvasHeight() {
+        return mCanvasHeight;
     }
 }
