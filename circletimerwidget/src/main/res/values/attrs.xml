@@ -12,6 +12,7 @@
         <attr name="hitch_count" format="integer"/>
         <attr name="indicator_size" format="dimension"/>
         <attr name="indicator_padding" format="dimension"/>
+        <attr name="android:entries"/>
     </declare-styleable>
 
 </resources>
