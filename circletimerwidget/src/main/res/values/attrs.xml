@@ -2,10 +2,10 @@
 <resources>
 
     <declare-styleable name="CircleTimerWidget">
-        <attr name="top_color" format="color"/>
-        <attr name="bottom_color" format="color"/>
-        <attr name="center_color" format="color"/>
-        <attr name="edge_color" format="color"/>
+        <attr name="start_color" format="color"/>
+        <attr name="end_color" format="color"/>
+        <attr name="inner_color" format="color"/>
+        <attr name="outer_color" format="color"/>
         <attr name="circle_line_width" format="dimension"/>
         <attr name="hitch_size" format="dimension"/>
         <attr name="hitch_padding" format="dimension"/>

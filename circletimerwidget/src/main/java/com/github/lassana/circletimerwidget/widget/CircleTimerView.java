@@ -18,11 +18,12 @@ import android.view.View;
  */
 public class CircleTimerView extends View {
 
+    public static final boolean IS_LAYER_TYPES_AVAILABLE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
     /* Drawing attributes */
-    private int mTopColor;
-    private int mBottomColor;
-    private int mCenterColor;
-    private int mEdgeColor;
+    private int mStartColor;
+    private int mEndColor;
+    private int mInnerColor;
+    private int mOuterColor;
     private float mCircleLineWidth;
     private float mHitchSize;
     private float mHitchPadding;
@@ -50,6 +51,7 @@ public class CircleTimerView extends View {
     /* Some fields for drawing */
     private Paint mExternalCirclePaint;
     private Paint mInternalCirclePaint;
+    private Paint mExternalCircleWithShadowPaint;
     private PointF[] mHitchPositionData;
     private int mIndicatorPosition = 0;
     private int mCanvasWidth;
@@ -81,13 +83,13 @@ public class CircleTimerView extends View {
     private void initAttrs(@NonNull AttributeSet attrs) {
         final TypedArray array = getContext().getTheme().obtainStyledAttributes(attrs, R.styleable.CircleTimerWidget, 0, 0);
         try {
-            mTopColor = array.getColor(R.styleable.CircleTimerWidget_top_color, Color.parseColor("#33CCCCCC"));
-            mBottomColor = array.getColor(R.styleable.CircleTimerWidget_bottom_color, Color.parseColor("#CCCCCC"));
-            mCenterColor = array.getColor(R.styleable.CircleTimerWidget_center_color, Color.parseColor("#fffbfbfb"));
-            mEdgeColor = array.getColor(R.styleable.CircleTimerWidget_edge_color, Color.parseColor("#e8e8e8"));
+            mStartColor = array.getColor(R.styleable.CircleTimerWidget_start_color, Color.parseColor("#A6A1A4"));
+            mEndColor = array.getColor(R.styleable.CircleTimerWidget_end_color, Color.parseColor("#333133"));
+            mInnerColor = array.getColor(R.styleable.CircleTimerWidget_inner_color, Color.parseColor("#F2EDF0"));
+            mOuterColor = array.getColor(R.styleable.CircleTimerWidget_outer_color, Color.parseColor("#D1CDD0"));
             mCircleLineWidth = array.getDimensionPixelSize(R.styleable.CircleTimerWidget_circle_line_width, 3);
-            mHitchSize = array.getDimensionPixelSize(R.styleable.CircleTimerWidget_hitch_size, 30);
-            mHitchPadding = array.getDimensionPixelSize(R.styleable.CircleTimerWidget_hitch_padding, 15);
+            mHitchSize = array.getDimensionPixelSize(R.styleable.CircleTimerWidget_hitch_size, 45);
+            mHitchPadding = array.getDimensionPixelSize(R.styleable.CircleTimerWidget_hitch_padding, 30);
             mHitchCount = array.getInt(R.styleable.CircleTimerWidget_hitch_count, 12);
             mIndicatorSize = array.getDimensionPixelSize(R.styleable.CircleTimerWidget_indicator_size, 50);
             mIndicatorPadding = array.getDimensionPixelSize(R.styleable.CircleTimerWidget_indicator_padding, 15);
@@ -96,6 +98,7 @@ public class CircleTimerView extends View {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void initView() {
         if (!isInEditMode()) {
             final GestureDetector gestureDetector = new GestureDetector(getContext(), mGestureListener);
@@ -106,6 +109,10 @@ public class CircleTimerView extends View {
                     return true;
                 }
             });
+        }
+
+        if (!isInEditMode()) {
+            if (IS_LAYER_TYPES_AVAILABLE) setLayerType(View.LAYER_TYPE_HARDWARE, null);
         }
 
         setWillNotDraw(false);
@@ -129,6 +136,7 @@ public class CircleTimerView extends View {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -138,16 +146,27 @@ public class CircleTimerView extends View {
         final int measuredWidth = getMeasuredWidth();
         final int measuredHeight = getMeasuredHeight();
 
-        if (mExternalCirclePaint == null) {
+        if (mExternalCirclePaint == null || mExternalCircleWithShadowPaint == null) {
             mExternalCirclePaint = new Paint();
-            mExternalCirclePaint.setShader(new LinearGradient(
+            final LinearGradient gradient = new LinearGradient(
                     0,
                     0,
-                    measuredWidth / 2,
-                    measuredHeight / 2,
-                    mTopColor,
-                    mBottomColor,
-                    Shader.TileMode.CLAMP));
+                    measuredWidth,
+                    measuredHeight,
+                    mStartColor,
+                    mEndColor,
+                    Shader.TileMode.CLAMP);
+            mExternalCirclePaint.setShader(gradient);
+            mExternalCirclePaint.setStyle(Paint.Style.STROKE);
+            mExternalCirclePaint.setStrokeWidth(mCircleLineWidth);
+
+            //mExternalCirclePaint.setMaskFilter(new BlurMaskFilter(1, BlurMaskFilter.Blur.NORMAL));
+            //mExternalCirclePaint.setHinting(Paint.HINTING_ON);
+            mExternalCirclePaint.setAntiAlias(true);
+
+            mExternalCircleWithShadowPaint = new Paint(mExternalCirclePaint);
+            mExternalCircleWithShadowPaint.setShadowLayer(4.0f, 0.0f, 2.0f, Color.BLACK);
+            if (IS_LAYER_TYPES_AVAILABLE) setLayerType(LAYER_TYPE_SOFTWARE, mExternalCircleWithShadowPaint);
         }
 
         if (mInternalCirclePaint == null) {
@@ -156,10 +175,13 @@ public class CircleTimerView extends View {
                     measuredWidth / 2,
                     measuredHeight / 2,
                     Math.min(measuredHeight, measuredWidth) / 2,
-                    mCenterColor,
-                    mEdgeColor,
+                    mInnerColor,
+                    mOuterColor,
                     Shader.TileMode.CLAMP);
             mInternalCirclePaint.setShader(gradient);
+            //mInternalCirclePaint.setMaskFilter(new BlurMaskFilter(1, BlurMaskFilter.Blur.NORMAL));
+            //mInternalCirclePaint.setHinting(Paint.HINTING_ON);
+            mInternalCirclePaint.setAntiAlias(true);
         }
 
         mCanvasWidth = canvas.getWidth();
@@ -168,8 +190,8 @@ public class CircleTimerView extends View {
         final float circleCenterX = mCanvasWidth / 2;
         final float circleCenterY = mCanvasHeight / 2;
 
-        canvas.drawCircle(circleCenterX, circleCenterY, radius - mHitchSize, mExternalCirclePaint);
-        canvas.drawCircle(circleCenterX, circleCenterY, radius - mHitchSize - mCircleLineWidth, mInternalCirclePaint);
+        canvas.drawCircle(circleCenterX, circleCenterY, radius - mHitchSize, mExternalCircleWithShadowPaint);
+        canvas.drawCircle(circleCenterX, circleCenterY, radius - mHitchSize - mCircleLineWidth/2, mInternalCirclePaint);
 
         if (mHitchPositionData == null) {
             mHitchPositionData = new PointF[mHitchCount];
@@ -184,14 +206,14 @@ public class CircleTimerView extends View {
 
         for (PointF nextPosition : mHitchPositionData) {
             canvas.drawCircle(nextPosition.x, nextPosition.y, (mHitchSize - mHitchPadding) / 2, mExternalCirclePaint);
-            canvas.drawCircle(nextPosition.x, nextPosition.y, (mHitchSize - mHitchPadding) / 2 - mCircleLineWidth, mInternalCirclePaint);
+            canvas.drawCircle(nextPosition.x, nextPosition.y, (mHitchSize - mHitchPadding) / 2 - mCircleLineWidth/2, mInternalCirclePaint);
         }
 
         final double indicatorAngle = Math.toRadians(((float) mIndicatorPosition / mHitchCount * 360.0f) - 90f);
         final float indicatorX = (float) (circleCenterX + (radius - mHitchSize - mCircleLineWidth - mIndicatorSize / 2) * Math.cos(indicatorAngle));
         final float indicatorY = (float) (circleCenterY + (radius - mHitchSize - mCircleLineWidth - mIndicatorSize / 2) * Math.sin(indicatorAngle));
         canvas.drawCircle(indicatorX, indicatorY, (mIndicatorSize - mIndicatorPadding) / 2, mExternalCirclePaint);
-        canvas.drawCircle(indicatorX, indicatorY, (mIndicatorSize - mIndicatorPadding) / 2 - mCircleLineWidth, mInternalCirclePaint);
+        //canvas.drawCircle(indicatorX, indicatorY, (mIndicatorSize - mIndicatorPadding) / 2 - mCircleLineWidth/2, mInternalCirclePaint);
     }
 
     private void handleMotionEvent(MotionEvent e) {
