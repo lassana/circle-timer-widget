@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_reset">Сброс</string>
+    <string-array name="timer_names">
+        <item>0 часов</item>
+        <item>1 час</item>
+        <item>2 часа</item>
+        <item>3 часа</item>
+        <item>4 часа</item>
+        <item>5 часов</item>
+        <item>6 часов</item>
+        <item>7 часов</item>
+        <item>8 часов</item>
+        <item>9 часов</item>
+        <item>10 часов</item>
+        <item>11 часов</item>
+    </string-array>
+</resources>

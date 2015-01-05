@@ -5,26 +5,39 @@ Round timer widget for Android without any PNG.
 
 ![Screenshot](raw/1.png) ![Screenshot](raw/2.png)
 
+The widget supports localized accessibility events:
+
+![Screenshot](raw/device-2015-01-04-173611.png) ![Screenshot](raw/device-2015-01-04-173415.png)
+
 ## Usage
 
-xml:
+XML:
 
     <com.github.lassana.circletimerwidget.widget.CircleTimerView
-        android:id="@+id/circle"
+            android:id="@+id/circle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:start_color="#FFDEBC"
+            app:end_color="#ff8800"
+            app:inner_color="#33b5e5"
+            app:outer_color="#0099cc"
+            app:circle_line_width="3dp"
+            app:hitch_size="30dp"
+            app:hitch_padding="20dp"
+            app:hitch_count="12"
+            app:indicator_size="33dp"
+            app:indicator_padding="10dp"/>
+
+A string array for the accessibility events could be provided via `android:entries` XML attribute:
+
+    <com.github.lassana.circletimerwidget.widget.CircleTimerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:start_color="#FFDEBC"
-        app:end_color="#ff8800"
-        app:inner_color="#33b5e5"
-        app:outer_color="#0099cc"
-        app:circle_line_width="3dp"
-        app:hitch_size="30dp"
-        app:hitch_padding="20dp"
-        app:hitch_count="12"
-        app:indicator_size="33dp"
-        app:indicator_padding="10dp"/>
+        ...
+        android:entries="@array/timer_names"/>
 
-code:
+
+Code:
 
     circleTimerWidget.setCircleTimerListener(new CircleTimerListener() {
         @Override
@@ -32,6 +45,7 @@ code:
             // ...
         }
     });
+
 ---
 
 This project is licensed under [the FreeBSD License](LICENSE).

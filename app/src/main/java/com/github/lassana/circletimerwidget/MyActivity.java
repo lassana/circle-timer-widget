@@ -21,10 +21,12 @@ public class MyActivity extends Activity {
         mCircleTimerWidget.setCircleTimerListener(new CircleTimerListener() {
             @Override
             public void onPositionChanged(int newPosition) {
-                setTitle(String.valueOf(newPosition));
+                setTitle(getResources().getStringArray(R.array.timer_names)[newPosition]);
             }
         });
-        setTitle(savedInstanceState == null ? "0" : savedInstanceState.getCharSequence("title"));
+        setTitle(savedInstanceState == null
+                ? getResources().getStringArray(R.array.timer_names)[0]
+                : savedInstanceState.getCharSequence("title"));
     }
 
     @Override
@@ -43,7 +45,7 @@ public class MyActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_reset) {
             mCircleTimerWidget.setIndicatorPosition(0);
-            setTitle("0");
+            setTitle(getResources().getStringArray(R.array.timer_names)[0]);
             return true;
         } else {
             return super.onOptionsItemSelected(item);

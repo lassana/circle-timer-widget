@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="text_indicator_position">Set a timer position: %s</string>
+</resources>

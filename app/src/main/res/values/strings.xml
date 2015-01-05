@@ -2,4 +2,18 @@
 <resources>
     <string name="app_name">circletimerwidget</string>
     <string name="action_reset">Reset</string>
+    <string-array name="timer_names">
+        <item>0 hours</item>
+        <item>1 hour</item>
+        <item>2 hours</item>
+        <item>3 hours</item>
+        <item>4 hours</item>
+        <item>5 hours</item>
+        <item>6 hours</item>
+        <item>7 hours</item>
+        <item>8 hours</item>
+        <item>9 hours</item>
+        <item>10 hours</item>
+        <item>11 hours</item>
+    </string-array>
 </resources>

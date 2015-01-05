@@ -7,6 +7,8 @@ import android.graphics.*;
 import android.os.Build;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.widget.ExploreByTouchHelper;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -56,9 +58,14 @@ public class CircleTimerView extends View {
     private int mIndicatorPosition = 0;
     private int mCanvasWidth;
     private int mCanvasHeight;
+    private int mRadius;
 
     /* Callback */
     private CircleTimerListener mCircleTimerListener;
+
+    /* Accessibility fields */
+    private ExploreByTouchHelper mExploreByTouchHelper;
+    private CharSequence[] mHitchNames;
 
     public CircleTimerView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -93,6 +100,10 @@ public class CircleTimerView extends View {
             mHitchCount = array.getInt(R.styleable.CircleTimerWidget_hitch_count, 12);
             mIndicatorSize = array.getDimensionPixelSize(R.styleable.CircleTimerWidget_indicator_size, 50);
             mIndicatorPadding = array.getDimensionPixelSize(R.styleable.CircleTimerWidget_indicator_padding, 15);
+            mHitchNames = array.getTextArray(R.styleable.CircleTimerWidget_android_entries);
+            if (mHitchNames != null && mHitchNames.length != mHitchCount) {
+                throw new IllegalArgumentException("Length of \"android:entries\" array should equals to hitch count!");
+            }
         } finally {
             array.recycle();
         }
@@ -111,9 +122,12 @@ public class CircleTimerView extends View {
             });
         }
 
-        if (IS_LAYER_TYPES_AVAILABLE && !isInEditMode()) setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        //if (IS_LAYER_TYPES_AVAILABLE && !isInEditMode()) setLayerType(View.LAYER_TYPE_HARDWARE, null);
 
         setWillNotDraw(false);
+
+        mExploreByTouchHelper = new CircleTimerTouchHelper(this);
+        ViewCompat.setAccessibilityDelegate(this, mExploreByTouchHelper);
     }
 
     @Override
@@ -161,9 +175,9 @@ public class CircleTimerView extends View {
             mExternalCirclePaint.setAntiAlias(true);
 
             mExternalCircleWithShadowPaint = new Paint(mExternalCirclePaint);
-            if ( !isInEditMode() ) {
+            if (!isInEditMode()) {
                 mExternalCircleWithShadowPaint.setShadowLayer(4.0f, 0.0f, 2.0f, Color.BLACK);
-                if (IS_LAYER_TYPES_AVAILABLE ) setLayerType(LAYER_TYPE_SOFTWARE, mExternalCircleWithShadowPaint);
+                if (IS_LAYER_TYPES_AVAILABLE) setLayerType(LAYER_TYPE_SOFTWARE, mExternalCircleWithShadowPaint);
             }
         }
 
@@ -184,12 +198,12 @@ public class CircleTimerView extends View {
 
         mCanvasWidth = canvas.getWidth();
         mCanvasHeight = canvas.getHeight();
-        final float radius = Math.min(mCanvasWidth, mCanvasHeight) / 2;
+        mRadius = Math.min(mCanvasWidth, mCanvasHeight) / 2;
         final float circleCenterX = mCanvasWidth / 2;
         final float circleCenterY = mCanvasHeight / 2;
 
-        canvas.drawCircle(circleCenterX, circleCenterY, radius - mHitchSize, mExternalCircleWithShadowPaint);
-        canvas.drawCircle(circleCenterX, circleCenterY, radius - mHitchSize - mCircleLineWidth / 2, mInternalCirclePaint);
+        canvas.drawCircle(circleCenterX, circleCenterY, mRadius - mHitchSize, mExternalCircleWithShadowPaint);
+        canvas.drawCircle(circleCenterX, circleCenterY, mRadius - mHitchSize - mCircleLineWidth / 2, mInternalCirclePaint);
 
         if (mHitchPositionData == null) {
             mHitchPositionData = new PointF[mHitchCount];
@@ -197,8 +211,8 @@ public class CircleTimerView extends View {
             for (int i = 0; i < mHitchCount; ++i) {
                 angle = Math.toRadians(((float) i / mHitchCount * 360.0f) - 90f);
                 mHitchPositionData[i] = new PointF(
-                        (float) (circleCenterX + (radius - (mHitchSize / 2)) * Math.cos(angle)),
-                        (float) (circleCenterY + (radius - (mHitchSize / 2)) * Math.sin(angle)));
+                        (float) (circleCenterX + (mRadius - (mHitchSize / 2)) * Math.cos(angle)),
+                        (float) (circleCenterY + (mRadius - (mHitchSize / 2)) * Math.sin(angle)));
             }
         }
 
@@ -208,8 +222,8 @@ public class CircleTimerView extends View {
         }
 
         final double indicatorAngle = Math.toRadians(((float) mIndicatorPosition / mHitchCount * 360.0f) - 90f);
-        final float indicatorX = (float) (circleCenterX + (radius - mHitchSize - mCircleLineWidth - mIndicatorSize / 2) * Math.cos(indicatorAngle));
-        final float indicatorY = (float) (circleCenterY + (radius - mHitchSize - mCircleLineWidth - mIndicatorSize / 2) * Math.sin(indicatorAngle));
+        final float indicatorX = (float) (circleCenterX + (mRadius - mHitchSize - mCircleLineWidth - mIndicatorSize / 2) * Math.cos(indicatorAngle));
+        final float indicatorY = (float) (circleCenterY + (mRadius - mHitchSize - mCircleLineWidth - mIndicatorSize / 2) * Math.sin(indicatorAngle));
         canvas.drawCircle(indicatorX, indicatorY, (mIndicatorSize - mIndicatorPadding) / 2, mExternalCirclePaint);
         //canvas.drawCircle(indicatorX, indicatorY, (mIndicatorSize - mIndicatorPadding) / 2 - mCircleLineWidth/2, mInternalCirclePaint);
     }
@@ -223,7 +237,7 @@ public class CircleTimerView extends View {
         }
     }
 
-    private int calculateZoneIndex(float touchX, float touchY) {
+    protected int calculateZoneIndex(float touchX, float touchY) {
         float lastMinDistance = Float.MAX_VALUE;
         int rvalue = mIndicatorPosition;
         float radius = Math.min(mCanvasWidth, mCanvasHeight) / 2;
@@ -256,5 +270,34 @@ public class CircleTimerView extends View {
             throw new IllegalArgumentException("New position value cannot be larger that count of hitch!");
         mIndicatorPosition = newPosition;
         invalidate();
+    }
+
+    public int getHitchCount() {
+        return mHitchCount;
+    }
+
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+    @Override
+    protected boolean dispatchHoverEvent(@NonNull MotionEvent event) {
+        if (mExploreByTouchHelper != null && mExploreByTouchHelper.dispatchHoverEvent(event)) {
+            return true;
+        }
+        return super.dispatchHoverEvent(event);
+    }
+
+    protected CharSequence[] getHitchNames() {
+        return mHitchNames;
+    }
+
+    protected int getRadius() {
+        return mRadius;
+    }
+
+    protected int getCanvasWidth() {
+        return mCanvasWidth;
+    }
+
+    protected int getCanvasHeight() {
+        return mCanvasHeight;
     }
 }
