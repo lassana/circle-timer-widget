@@ -11,6 +11,16 @@ The widget supports localized accessibility events:
 
 ## Usage
 
+Grab the latest version from `jcenter`:
+
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        compile 'com.github.lassana:circle-timer-widget:1.1.0'
+    }
+
+
 XML:
 
     <com.github.lassana.circletimerwidget.widget.CircleTimerView
@@ -28,7 +38,7 @@ XML:
             app:indicator_size="33dp"
             app:indicator_padding="10dp"/>
 
-A string array for the accessibility events could be provided via `android:entries` XML attribute:
+An accessibility events messages (strings array) can be set in `android:entries` attribute:
 
     <com.github.lassana.circletimerwidget.widget.CircleTimerView
         android:layout_width="match_parent"
@@ -37,7 +47,7 @@ A string array for the accessibility events could be provided via `android:entri
         android:entries="@array/timer_names"/>
 
 
-Code:
+Callback:
 
     circleTimerWidget.setCircleTimerListener(new CircleTimerListener() {
         @Override
